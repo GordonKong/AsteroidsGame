@@ -20,11 +20,11 @@ public void setup()
 public void draw() 
 {
   background(0);
-  
   for(int i = 0; i < galaxy.length; i++)
   {
     galaxy[i].appear();
   }
+  
   for(int i = 0; i < rock.size(); i++)
   {
     rock.get(i).show();
@@ -39,10 +39,7 @@ public void draw()
     pew.get(i).show();
     pew.get(i).move();
   }
-  for(int i = 0; i < galaxy.length; i++)
-  {
-    galaxy[i].appear();
-  }
+  
   for (int k = rock.size()-1; k>=0; k--)
   {
     if (dist(jet.getX(), jet.getY(), rock.get(k).getX(), rock.get(k).getY()) < 25)
