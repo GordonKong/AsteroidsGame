@@ -1,47 +1,71 @@
-Star[] galaxy;
-ArrayList<Asteroids> rock; //Asteroids[] rocks;
+Star[] galaxy = new Star[150];
+ArrayList<Asteroids> rock = new ArrayList<Asteroids>(); //Asteroids[] rocks;
 SpaceShip jet = new SpaceShip();//your variable declarations here
+ArrayList<Bullet> pew = new ArrayList<Bullet>();;
+
 public void setup() 
 {
-  galaxy = new Star[150];
+  size(800, 800);
   for (int i = 0; i < galaxy.length; i++)
   {
     galaxy[i] = new Star();
   }
-  rock = new ArrayList<Asteroids>();
   for (int i = 0; i < 24; i++) 
-  //for( int i = 0; i < rocks.length; i++)
   {
     rock.add(i, new Asteroids());
-    //rocks[i] = new Asteroids();
   }
- size(800, 800);
+
   //your code here
 }
 public void draw() 
 {
   background(0);
-  jet.show();
-  jet.move();
   
-  for( int i = 0; i < galaxy.length; i++)
+  for(int i = 0; i < galaxy.length; i++)
   {
     galaxy[i].appear();
   }
-  for( int i = 0; i < rock.size(); i++)
+  for(int i = 0; i < rock.size(); i++)
   {
     rock.get(i).show();
     rock.get(i).move();
   } 
+
+  jet.show();
+  jet.move(); 
+
+  for(int i = 0; i < pew.size(); i++)
+  {
+    pew.get(i).show();
+    pew.get(i).move();
+  }
+  for(int i = 0; i < galaxy.length; i++)
+  {
+    galaxy[i].appear();
+  }
   for (int k = rock.size()-1; k>=0; k--)
   {
     if (dist(jet.getX(), jet.getY(), rock.get(k).getX(), rock.get(k).getY()) < 25)
         rock.remove(k); //your code here
   }
-}  
 
- public void keyPressed()
+  for(int k = rock.size()-1; k >= 0; k--)
+  {  
+  for(int i = pew.size()-1; i>= 0; i--)
+  {
+    if(dist(pew.get(i).getX(), pew.get(i).getY(), rock.get(k).getX(), rock.get(k).getY()) < 10)
+      {
+      pew.remove(i);  
+      rock.remove(k);
+      break;
+      }
+  }
+  }  
+}
+
+public void keyPressed()
 {
+
   if (key == 'a') { jet.rotate(-2);}
   if (key == 'd') { jet.rotate(2);}
   if (key == 'w') { jet.accelerate(.5);}
@@ -54,10 +78,11 @@ public void draw()
     jet.setDirectionY(0);
     jet.setPointDirection((int)(Math.random()*360));
    }
-   if (key == ' ') 
-    {
+   if (keyCode == 32)
+    pew.add(new Bullet(jet)); //spacebar 
+    
       
-    }
+    
 }
 class Star
 {
@@ -69,7 +94,7 @@ class Star
   }
   public void appear()
   {
-    fill(100,100,255);
+    fill(30, 7, 86);
     ellipse(myX, myY, 5, 5);
   }
 }
@@ -114,7 +139,7 @@ class Asteroids extends Floater
     public double getPointDirection() { return (double)myPointDirection; }
     public void move()
     {
-      rotate(rotSpeed);
+      super.rotate(rotSpeed);
       super.move();
     }
 
@@ -135,7 +160,6 @@ class SpaceShip extends Floater
      yCorners[2] = -0;
      xCorners[3] = -8;
      yCorners[3] = 10;
- 
      myCenterX = 400;
      myCenterY = 400;
      myColor = color(150, 255, 255);
@@ -149,11 +173,19 @@ class SpaceShip extends Floater
     public void setY(int y) { myCenterY = y;}
     public int getY() {return (int)myCenterY;}
     public void setDirectionX(double x) { myDirectionX = x;}
-    public double getDirectionX() { return (double)myDirectionX; }
+    public double getDirectionX() { return myDirectionX; }
     public void setDirectionY(double y) { myDirectionY = y; }
-    public double getDirectionY() { return (double)myDirectionY; }
+    public double getDirectionY() { return myDirectionY; }
     public void setPointDirection(int degrees) { myPointDirection = degrees;}
-    public double getPointDirection() { return (double)myPointDirection; } 
+    public double getPointDirection() { return myPointDirection; } 
+    public void accelerate (double dAmount)   
+  {          
+    //convert the current direction the floater is pointing to radians    
+    double dRadians =myPointDirection*(Math.PI/180);     
+    //change coordinates of direction of travel    
+    myDirectionX += ((dAmount) * Math.cos(dRadians));    
+    myDirectionY += ((dAmount) * Math.sin(dRadians));       
+  }   
    
   } //your code here
 
@@ -177,15 +209,6 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   abstract public void setPointDirection(int degrees);   
   abstract public double getPointDirection(); 
 
-  //Accelerates the floater in the direction it is pointing (myPointDirection)   
-  public void accelerate (double dAmount)   
-  {          
-    //convert the current direction the floater is pointing to radians    
-    double dRadians =myPointDirection*(Math.PI/180);     
-    //change coordinates of direction of travel    
-    myDirectionX += ((dAmount) * Math.cos(dRadians));    
-    myDirectionY += ((dAmount) * Math.sin(dRadians));       
-  }   
   public void rotate (int nDegreesOfRotation)   
   {     
     //rotates the floater by a given number of degrees    
